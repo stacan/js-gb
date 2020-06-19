@@ -8,9 +8,9 @@
 //5.получение ключей через for...in; получение значений через for...of;
 //6.укороченная запись функции/метода; метод [Symbol.iterator]; yield;
 //7.Обьекты и ссылки; создаем какой то обьект, а в переменную кладем ссылку;
-//8.
-//9. 
-//10.
+//8.контекст и this
+//9.проверка на ключ в массиве
+//10.игра
 
 // Неиссякаемой энергии человек
 
@@ -317,6 +317,151 @@ const a = [...arr]; //в этот массив нужн разобрать
 // старый массив и положить все элементы сюда, и все 
 // что хранится в старом массиве, ляжет в новый массив,
 // и у нас по факту будет совершенно другой массив
+
+//обьекты тоже так можно копировать
 */
 
 // 1:26:30;
+//========================================================
+//Что такое контекст и что будет контекстом для нашего
+//метода sayNumber
+/*
+function getObject() {
+    return {
+        number: 5,
+        sayNumber() {
+            console.log(`Номер в данном обьекте ${this.number}`)
+        }
+    }
+}
+const myObject = getObject();
+myObject.sayNumber();
+*/
+//где this - это контекст, sayNumber - наша функция, myObject -
+//наш контекст в строке myObject.sayNumber();
+//если бы мы использовали стрелочная функция, то this был бы не
+//myObject, а то что лежит на уровень еще выше, и это был бы
+//window
+
+//Проверка на ключ в массиве
+/*
+const arr = ['hello', 'hi', 'aloha'];
+console.log('1' in arr);
+console.log('10' in arr);
+*/
+//========================================================
+
+//=======================   Игрушка   ====================
+
+const settings = {   //прописываем настройки поля
+    rowCount: 10,
+    colCount: 10,
+    startPositionX: 0,
+    startPositionY: 0,
+};
+
+const player = {    //прописываем игрока
+    x: null,
+    y: null,
+
+    init(startX, startY) {
+        this.x = startX;
+        this.y = startY;
+    },
+    
+    move(direction) {  //функция "направление"
+        switch (direction) {
+            case 2:       //кнопки 2, 4, 6, 8
+                this.y++;
+                break;
+            case 4:
+                this.x--;
+                break;
+            case 6:
+                this.x++;
+                break;
+            case 8:
+                this.y--;
+                break;
+
+        }
+    }
+}
+
+const game = {   //описываем саму игру
+    settings,
+    player,
+
+    run() {     //запуск
+        this.player.init(this.settings.startPositionX, this.settings.startPositionY);
+
+        while (true) {
+            this.render();
+            
+            const direction = this.getDirection();
+
+            if (direction === -1) {
+                return alert('До свидания !');
+            }
+
+            this.player.move(direction);
+        }
+    },
+
+    render() {
+        let map = '';
+
+        for (let row = 0; row < this.settings.rowCount; row++) {
+            for (let col = 0; col < this.settings.colCount; col++) {
+                if (this.player.y === row && this.player.x === col) {
+                    map += 'o '
+                } else {
+                    map += 'x '
+                }
+            }
+            map += '\n';
+        }
+
+        console.clear();
+        console.log(map);
+    },
+
+    getDirection() {
+        const availableDirection = [-1, 2, 4, 6, 8];
+
+        while(true) {   //проверяем введенное число на валидность, еще includes
+            const direction = parseInt(prompt(`Введите число, куда хотите переместиться. -1 для выхода`)); //parseInt отсекает дробные части числа, знак '-'; parseFloat отсекает целую часть числа
+
+            if (!availableDirection.includes(direction)) {
+                alert(`Для перемещения необходимо ввести одно из чисел: ${availableDirection.join(', ')}.`);
+                continue;
+
+            }
+            return direction;
+        }
+    },
+};
+
+game.run();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
